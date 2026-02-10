@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { TelemetryModule } from './telemetry/telemetry.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { MqttModule } from './mqtt/mqtt.module';
 
 @Module({
   imports: [
@@ -10,6 +11,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     DatabaseModule,
     TelemetryModule,
     AnalyticsModule,
+    MqttModule,
   ],
 })
 export class AppModule {}
