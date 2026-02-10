@@ -24,6 +24,9 @@
     "test:stream": "ts-node test/publish-telemetry.ts"
   },
   "dependencies": {
+    "@bull-board/api": "^6.17.0",
+    "@bull-board/express": "^6.17.0",
+    "@bull-board/nestjs": "^6.17.0",
     "@nestjs/bull": "^11.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.3",

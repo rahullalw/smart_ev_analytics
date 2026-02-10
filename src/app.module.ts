@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { TelemetryModule } from './telemetry/telemetry.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { MqttModule } from './mqtt/mqtt.module';
+import { BullBoardConfigModule } from './bullboard/bullboard.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MqttModule } from './mqtt/mqtt.module';
         removeOnFail: 5000,     // Keep last 5000 failed jobs for debugging
       },
     }),
+    BullBoardConfigModule,
     DatabaseModule,
     TelemetryModule,
     AnalyticsModule,
