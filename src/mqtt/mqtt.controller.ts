@@ -1,6 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload, Ctx, MqttContext } from '@nestjs/microservices';
-import { TelemetryBufferService } from '../telemetry/telemetry-buffer.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { MeterTelemetryDto, VehicleTelemetryDto } from '../telemetry/dto/telemetry.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
@@ -9,12 +10,15 @@ import { validate } from 'class-validator';
 export class MqttController {
   private readonly logger = new Logger(MqttController.name);
 
-  constructor(private readonly bufferService: TelemetryBufferService) {}
+  constructor(
+    @InjectQueue('telemetry-meter') private meterQueue: Queue,
+    @InjectQueue('telemetry-vehicle') private vehicleQueue: Queue,
+  ) {}
 
   /**
    * Handle meter telemetry messages from MQTT
    * Topic: telemetry/meter/{meterId}
-   * Optimization #2: Uses buffering for 90% reduction in DB transactions
+   * Jobs are queued and processed in batches by TelemetryProcessor
    */
   @MessagePattern('telemetry/meter/+')
   async handleMeterTelemetry(
@@ -25,7 +29,7 @@ export class MqttController {
     this.logger.debug(`Received MQTT message on topic: ${topic}`);
 
     try {
-      // Validate DTO (payload is already parsed by NestJS)
+      // Validate DTO
       const dto = plainToInstance(MeterTelemetryDto, data);
       const errors = await validate(dto);
 
@@ -34,18 +38,18 @@ export class MqttController {
         return;
       }
 
-      // Add to buffer instead of immediate DB write
-      await this.bufferService.addMeterData(dto);
-      this.logger.debug(`MQTT: Meter ${dto.meterId} telemetry buffered`);
+      // Add to BullMQ queue (will be batched by processor)
+      await this.meterQueue.add('ingest', dto);
+      this.logger.debug(`MQTT: Meter ${dto.meterId} telemetry queued`);
     } catch (error) {
-      this.logger.error(`Failed to process meter MQTT message: ${error.message}`, error.stack);
+      this.logger.error(`Failed to queue meter MQTT message: ${error.message}`, error.stack);
     }
   }
 
   /**
    * Handle vehicle telemetry messages from MQTT
    * Topic: telemetry/vehicle/{vehicleId}
-   * Optimization #2: Uses buffering for 90% reduction in DB transactions
+   * Jobs are queued and processed in batches by TelemetryProcessor
    */
   @MessagePattern('telemetry/vehicle/+')
   async handleVehicleTelemetry(
@@ -56,7 +60,7 @@ export class MqttController {
     this.logger.debug(`Received MQTT message on topic: ${topic}`);
 
     try {
-      // Validate DTO (payload is already parsed by NestJS)
+      // Validate DTO
       const dto = plainToInstance(VehicleTelemetryDto, data);
       const errors = await validate(dto);
 
@@ -65,11 +69,11 @@ export class MqttController {
         return;
       }
 
-      // Add to buffer instead of immediate DB write
-      await this.bufferService.addVehicleData(dto);
-      this.logger.debug(`MQTT: Vehicle ${dto.vehicleId} telemetry buffered`);
+      // Add to BullMQ queue (will be batched by processor)
+      await this.vehicleQueue.add('ingest', dto);
+      this.logger.debug(`MQTT: Vehicle ${dto.vehicleId} telemetry queued`);
     } catch (error) {
-      this.logger.error(`Failed to process vehicle MQTT message: ${error.message}`, error.stack);
+      this.logger.error(`Failed to queue vehicle MQTT message: ${error.message}`, error.stack);
     }
   }
 }

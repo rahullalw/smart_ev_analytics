@@ -19,9 +19,12 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:load": "ts-node test/run-load-test.ts",
-    "test:mqtt": "ts-node test/mqtt-publisher.ts"
+    "test:mqtt": "ts-node test/mqtt-publisher.ts",
+    "seed-db": "ts-node test/seed-database.ts",
+    "test:stream": "ts-node test/publish-telemetry.ts"
   },
   "dependencies": {
+    "@nestjs/bull": "^11.0.4",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^10.0.0",
@@ -29,6 +32,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@types/pg": "^8.16.0",
     "@types/uuid": "^10.0.0",
+    "bull": "^4.16.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
     "mqtt": "^5.15.0",
