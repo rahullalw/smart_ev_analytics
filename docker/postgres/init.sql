@@ -28,6 +28,7 @@ CREATE TABLE vehicle_meter_mapping (
     vehicle_id UUID NOT NULL,
     meter_id UUID NOT NULL,
     mapped_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    unmapped_at TIMESTAMPTZ,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (vehicle_id, meter_id)
 );

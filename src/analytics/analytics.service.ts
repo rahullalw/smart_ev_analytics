@@ -37,17 +37,21 @@ export class AnalyticsService {
          SELECT $2::timestamptz AS start_time, $3::timestamptz AS end_time
        ),
        vehicle_data AS (
-         SELECT SUM(kwh_delivered_dc) AS total_dc,
-                AVG(battery_temp) AS avg_temp,
-                COUNT(*) AS dc_count
+         SELECT 
+           (MAX(kwh_delivered_dc) - MIN(kwh_delivered_dc)) AS total_dc,
+           AVG(battery_temp) AS avg_temp,
+           COUNT(*) AS dc_count
          FROM vehicle_telemetry
          WHERE vehicle_id = $1 AND recorded_at >= $2 AND recorded_at <= $3
        ),
        meter_data AS (
-         SELECT COALESCE(SUM(m.kwh_consumed_ac), 0) AS total_ac
+         SELECT COALESCE(MAX(m.kwh_consumed_ac) - MIN(m.kwh_consumed_ac), 0) AS total_ac
          FROM meter_telemetry m
          INNER JOIN vehicle_meter_mapping vm ON m.meter_id = vm.meter_id
-         WHERE vm.vehicle_id = $1 AND vm.is_active = TRUE
+         WHERE vm.vehicle_id = $1
+           -- Session was active during the time range
+           AND vm.mapped_at <= $3
+           AND (vm.unmapped_at IS NULL OR vm.unmapped_at >= $2)
            AND m.recorded_at >= $2 AND m.recorded_at <= $3
        )
        SELECT v.total_dc, v.avg_temp, v.dc_count, COALESCE(m.total_ac, 0) AS total_ac
