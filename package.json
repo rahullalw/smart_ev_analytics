@@ -18,10 +18,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "test:load": "ts-node test/run-load-test.ts",
-    "test:mqtt": "ts-node test/mqtt-publisher.ts",
     "seed-db": "ts-node test/seed-database.ts",
-    "test:stream": "ts-node test/publish-telemetry.ts"
+    "test:stream": "ts-node test/publish-telemetry.ts",
+    "test:load-realistic": "ts-node test/load-test-realistic.ts"
   },
   "dependencies": {
     "@bull-board/api": "^6.17.0",
