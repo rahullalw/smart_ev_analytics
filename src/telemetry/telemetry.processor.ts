@@ -148,7 +148,7 @@ export class VehicleTelemetryProcessor {
       return;
     }
 
-    this.isProcessing = false;
+    this.isProcessing = true;
 
     try {
       const jobs = await this.vehicleQueue.getJobs(['waiting', 'active'], 0, this.BATCH_SIZE - 1);

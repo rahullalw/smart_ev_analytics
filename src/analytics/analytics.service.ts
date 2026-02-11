@@ -97,7 +97,7 @@ export class AnalyticsService implements OnModuleInit {
    * @param vehicleId UUID of the vehicle
    * @returns Performance metrics
    */
-  async getVehiclePerformance(vehicleId: string):Promise<PerformanceMetrics> {
+  async getVehiclePerformance(vehicleId: string): Promise<PerformanceMetrics> {
     const endTime = new Date();
     const startTime = new Date(endTime.getTime() - 24 * 60 * 60 * 1000);
 
