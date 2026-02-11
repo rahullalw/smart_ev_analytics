@@ -6,6 +6,7 @@ import { TelemetryModule } from './telemetry/telemetry.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { MqttModule } from './mqtt/mqtt.module';
 import { BullBoardConfigModule } from './bullboard/bullboard.module';
+import { ChargingSessionModule } from './charging-session/charging-session.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { BullBoardConfigModule } from './bullboard/bullboard.module';
     DatabaseModule,
     TelemetryModule,
     AnalyticsModule,
+    ChargingSessionModule,
     MqttModule,
   ],
 })
