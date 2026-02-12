@@ -74,6 +74,54 @@ npm run test:load-realistic 5
 
 ---
 
+## API Reference
+
+### 1. Vehicle Performance
+**GET** `/v1/analytics/performance/:vehicleId`
+
+Calculates efficiency ratio, AC/DC consumption, and average battery temperature for a specific vehicle over the last 24 hours.
+
+**Example Response:**
+```json
+{
+    "vehicleId": "e6551740-f76d-4586-82c2-86164a9b05a4",
+    "totalAcConsumption": 2.877,
+    "totalDcDelivery": 2.499,
+    "efficiencyRatio": 0.8686131386861314,
+    "avgBatteryTemp": 24.07,
+    "dataPoints": 10 // Data points on which efficiency evaluated
+}
+```
+
+### 2. All Vehicle States
+**GET** `/v1/analytics/vehicles/states`
+
+Retrieves the latest state (SoC, DC delivery, temperature) for all vehicles monitored by the system.
+
+**Example Response:**
+```json
+[
+    {
+        "vehicleId": "e6551740-f76d-4586-82c2-86164a9b05a4",
+        "soc": 80.72,
+        "kwhDeliveredDc": 2.614,
+        "batteryTemp": 28.18,
+        "lastUpdated": "2026-02-11T07:55:18.295Z"
+    },
+    {
+        "vehicleId": "e976eb7b-4f9b-419b-9936-2ae00d3cb89c",
+        "soc": 55.7,
+        "kwhDeliveredDc": 2.688,
+        "batteryTemp": 20.3,
+        "lastUpdated": "2026-02-11T07:55:18.295Z"
+    }
+    {...},
+    {...},
+]
+```
+
+---
+
 ## System Architecture
 
 The system follows an event-driven loop aimed at maximizing write throughput while maintaining query performance.
@@ -143,3 +191,4 @@ I use raw SQL with `UNNEST` for batch inserts, allowing thousands of records to 
 
 **Tradeoff:**
 Raw SQL is more verbose and easier to mess up compared to using an ORM like TypeORM, but the performance gain is worth it at this scale.
+
